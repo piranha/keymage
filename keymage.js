@@ -74,17 +74,22 @@
         KEYS[String.fromCharCode(i).toLowerCase()] = i;
     }
 
-
-    // -----------------------
-    // Actual work is done here
-
-    var chains = [];
+    // Sequence matching states
 
     var STATE = {
         MATCH: 1,
         PARTIAL: 2,
         INTERRUPT: 3
     };
+
+    // -----------------------
+    // Actual work is done here
+
+    var allChains = {
+        all: []
+    };
+
+    var currentScope = 'all';
 
     function parseKeystring(keystring) {
         var keychain = [];
@@ -146,12 +151,18 @@
 
 
     var sequence = [];
+
     function dispatch(e) {
         var info = eventInfo(e);
         var seq = sequence.slice();
         seq.push(info);
         var chain, handler;
         var state = STATE.MATCH;
+
+        var chains = allChains[currentScope];
+        if (currentScope != 'all') {
+            chains = chains.slice().concat(allChains.all);
+        }
 
         for (var i = 0; i < chains.length; i++) {
             chain = chains[i][0];
@@ -212,12 +223,16 @@
             scope = 'all';
         }
 
+        var chains = allChains[scope] || (allChains[scope] = []);
         chains.push([parseKeystring(keystring), fn]);
     };
 
+    keymage.setScope = function(scope) {
+        currentScope = scope;
+    };
+    keymage.getScope = function() { return currentScope; };
+
     window.addEventListener('keydown', dispatch, false);
-
     return keymage;
-
 })(this,
    (typeof module !== 'undefined' && module.exports ? module.exports : this));
