@@ -78,6 +78,8 @@
     // -----------------------
     // Actual work is done here
 
+    var chains = [];
+
     var STATE = {
         MATCH: 1,
         PARTIAL: 2,
@@ -142,120 +144,78 @@
         return eq;
     }
 
-    function KeyMage(keystrings, options) {
-        // _bind(this.handler, this);
 
-        this.chains = [];
-        this.handlers = [];
-        this.seq = [];
+    var sequence = [];
+    function dispatch(e) {
+        var info = eventInfo(e);
+        var seq = sequence.slice();
+        seq.push(info);
+        var chain, handler;
+        var state = STATE.MATCH;
 
-        for (var i = 0; i < keystrings.length; i++) {
-            this.chains.push(parseKeystring(keystrings[i]));
+        for (var i = 0; i < chains.length; i++) {
+            chain = chains[i][0];
+            handler = chains[i][1];
+
+            state = STATE.MATCH;
+            for (var j = 0; j < seq.length; j++) {
+                if (!infoEqual(seq[j], chain[j])) {
+                    state = STATE.INTERRUPT;
+                    break;
+                }
+            }
+
+            if (state === STATE.MATCH) {
+                // If we've got a match, but sequence is smaller than chain,
+                // this is not a real match.
+                if (seq.length < chain.length) {
+                    state = STATE.PARTIAL;
+                }
+
+                // By breaking in any case here we explicitly have no
+                // possibility to support chain which is part of other
+                // chain.
+                break;
+            }
         }
 
-        if (options.global) {
-            this.global();
+        switch (state) {
+        case STATE.INTERRUPT:
+            sequence = [];
+            break;
+        case STATE.PARTIAL:
+            sequence = seq;
+            break;
+        case STATE.MATCH:
+            sequence = [];
+            for (i = 0; i < [handler].length; i++) {
+                // var handler = [handler][i];
+                var res = handler(e, chain.original);
+                if (res === false) {
+                    e.preventDefault();
+                }
+            }
         }
     }
 
-    KeyMage.prototype = {
-        add: function(fn, context) {
-            this.handlers.push([fn, context]);
-        },
 
-        remove: function(fn) {
-            for (var i = 0; i < this.handlers.length; i++) {
-                if (this.handlers[i][0] === fn) {
-                    this.handlers.splice(i, 1);
-                    break;
-                }
-            }
-        },
-
-        global: function() {
-            document.addEventListener('keydown', this.handler.bind(this),
-                                      false);
-        },
-
-        handler: function(e) {
-            var info = eventInfo(e);
-            var seq = this.seq.slice();
-            seq.push(info);
-            var chain;
-            var state = STATE.MATCH;
-
-            for (var i = 0; i < this.chains.length; i++) {
-                chain = this.chains[i];
-
-                state = STATE.MATCH;
-                for (var j = 0; j < seq.length; j++) {
-                    if (!infoEqual(seq[j], chain[j])) {
-                        state = STATE.INTERRUPT;
-                        break;
-                    }
-                }
-
-                if (state !== STATE.INTERRUPT) {
-                    // If we've got a match, but sequence is smaller than chain,
-                    // this is not a real match. But sequence needs to be
-                    // updated.
-                    if (seq.length < chain.length) {
-                        state = STATE.PARTIAL;
-                        this.seq = seq;
-                    }
-
-                    // By breaking in any case here we explicitly have no
-                    // possibility to support chain which is part of other
-                    // chain.
-                    break;
-                }
-            }
-
-            switch (state) {
-            case STATE.INTERRUPT:
-                this.seq = [];
-                break;
-            case STATE.PARTIAL:
-                break;
-            case STATE.MATCH:
-                this.seq = [];
-                for (i = 0; i < this.handlers.length; i++) {
-                    var handler = this.handlers[i];
-                    var res = handler[0].call(handler[1], e, chain.original);
-                    if (res === false) {
-                        e.preventDefault();
-                    }
-                }
-            }
+    var keymage = exports.keymage = function(scope, keystring, fn) {
+        if (keystring === undefined && fn === undefined) {
+            return function(keystring, fn) {
+                return keymage(scope, keystring, fn);
+            };
         }
+
+        if (fn === undefined && typeof keystring === 'function') {
+            fn = keystring;
+            keystring = scope;
+            scope = 'all';
+        }
+
+        chains.push([parseKeystring(keystring), fn]);
     };
 
-    var keymage = exports.keymage = function(keystrings, fn, options) {
-        if (typeof keystrings === 'string') {
-            keystrings = [keystrings];
-        }
-
-        if (options === undefined && typeof fn === 'object') {
-            options = fn;
-            fn = null;
-        }
-
-        if (typeof keystrings === 'object' && !Array.isArray(keystrings)) {
-            var mages = [];
-            for (var k in keystrings) {
-                mages.push(new KeyMage(k, options).add(keystrings[k]));
-            }
-            return mages;
-        } else {
-            var mage = new KeyMage(keystrings, options);
-            if (fn) {
-                mage.add(fn);
-            }
-            return mage;
-        }
-    };
-
-    keymage.KEYS = KEYS;
+    window.addEventListener('keydown', dispatch, false);
 
     return keymage;
 
