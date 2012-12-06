@@ -196,6 +196,8 @@
             }
         }
 
+        var definitionScope = scope.slice(0, i).join('.');
+
         // partial match, save the sequence
         if (matched && !chains.handlers) {
             sequence = seq;
@@ -205,8 +207,11 @@
         if (matched) {
             for (i = 0; i < chains.handlers.length; i++) {
                 var handler = chains.handlers[i];
-                var res = handler(e, {shortcut: handler._original,
-                                      scope: currentScope});
+                var res = handler(e, {
+                    shortcut: handler._original,
+                    scope: currentScope,
+                    definitionScope: definitionScope
+                });
                 if (res === false) {
                     e.preventDefault();
                 }

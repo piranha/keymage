@@ -5,6 +5,7 @@ Keymage is a small library for handling key bindings in JavaScript.
 It was written out of the fact that no other library supported combination of
 all necessary features and their design made it easier to write a new one.
 
+[Test results](http://htmlpreview.github.com/?http://github.com/piranha/keymage/blob/master/test/test.html).
 
 ## Features
 
@@ -29,7 +30,7 @@ module.
 
 ## Defining shortcuts
 
-Keymage exposes single function, `keymage`:
+Keymage exposes a single function, `keymage`:
 
 ```javascript
 // bind on 'a'
@@ -44,18 +45,21 @@ keymage('ctrl-e', function() { return false; });
 keymage('defmod-j', function() { alert("I am fired"); });
 ```
 
-Function you've used as handler, receives two arguments: original event and
-context so you can understand what and why was fired. This context contains two
-properties: `shortcut` is a string you've originally provided for binding and
-`scope` is a scope which is currently active (TODO: maybe scope which had this
-shortcut defined should be passed instead?):
+Handler function receives two arguments: the original event and the context so
+you can understand what and why was fired.
+
+The context contains those properties:
+
+ - `shortcut` is a string you've originally provided for binding
+ - `scope` is a scope which is currently active
+ - `definitionScope` is a scope where this shortcut was defined
 
 ```javascript
 keymage('alt-c', function(e, ctx) {
-    console.log(ctx.shortcut, ctx.scope);
+    console.log(ctx.shortcut, ctx.scope, ctx.definitionScope);
 });
 
-// -> "alt-c", ""
+// -> "alt-c", "", ""
 ```
 
 
@@ -67,7 +71,7 @@ Keymage supports key sequences:
 keymage('ctrl-j k', function() { alert("Nice!"); });
 ```
 
-For this to fire, you have to first press both `ctrl` and `j`, and then `k`.
+For this to fire you have to first press both `ctrl` and `j`, and then `k`.
 
 
 ## Scopes
@@ -108,5 +112,10 @@ keymage.popScope('chat') // scope is ''
 `pushScope` returns resulting scope and `popScope` returns topmost scope it
 removed (so with parameters it's the one you've asked to remove).
 
-Note that calling `popScope` with name of scope which is repeat in whole current
-scope will pop topmost one.
+Note that calling `popScope` with name of a scope which is repeated few times
+will pop topmost one, i.e.:
+
+```javascript
+keymage.setScope('this.scope.is.deep.scope')
+keymage.popScope('scope') // scope is 'this'
+```
