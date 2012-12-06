@@ -1,13 +1,6 @@
 // keymage.js - Javascript keyboard event handling
 
 (function(global, exports, undefined) {
-    function _bind(fn, ctx) {
-        return function() {
-            return fn.apply(ctx, arguments);
-        };
-    }
-
-
     // Defining all keys
     var MODPROPS = ['shiftKey', 'ctrlKey', 'altKey', 'metaKey'];
     var MODS = {
@@ -84,14 +77,6 @@
             KEYREV[val] = k;
         }
     }
-
-    // Sequence matching states
-
-    var STATE = {
-        MATCH: 1,
-        PARTIAL: 2,
-        INTERRUPT: 3
-    };
 
     // -----------------------
     // Actual work is done here
