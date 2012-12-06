@@ -97,6 +97,7 @@
     // Actual work is done here
 
     var currentScope = '';
+    var allChains = {};
 
     function parseKeyString(keystring) {
         var bits = keystring.split('-');
@@ -183,11 +184,13 @@
         var seq = sequence.slice();
         seq.push(eventKeyString(e));
         var scope = currentScope.split('.');
-        var matched = true;
-        var chains, key;
+        var matched, chains, key;
 
         for (var i = scope.length; i >= 0; i--) {
-            chains = getNestedChains(keymage.bindings, scope.slice(0, i));
+            chains = getNestedChains(allChains, scope.slice(0, i));
+            if (!chains) {
+                continue;
+            }
 
             matched = true;
             for (var j = 0; j < seq.length; j++) {
@@ -226,7 +229,7 @@
 
     function assignKey(scope, keychain, fn) {
         var bits = scope.split('.');
-        var chains = keymage.bindings;
+        var chains = allChains;
 
         bits = bits.concat(keychain);
 
@@ -262,7 +265,7 @@
     };
 
 
-    keymage.bindings = {};
+    keymage.bindings = allChains;
 
     keymage.setScope = function(scope) {
         currentScope = scope ? scope : '';
