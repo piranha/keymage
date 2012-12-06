@@ -205,7 +205,8 @@
         if (matched) {
             for (i = 0; i < chains.handlers.length; i++) {
                 var handler = chains.handlers[i];
-                var res = handler(e, handler._original);
+                var res = handler(e, {shortcut: handler._original,
+                                      scope: currentScope});
                 if (res === false) {
                     e.preventDefault();
                 }
