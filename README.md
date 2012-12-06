@@ -23,7 +23,7 @@ Include `keymage.min.js` in your page:
 <script src="keymage.min.js"></script>
 ```
 
-There are no dependencies. TODO: make it possible to use library as an AMD
+There are no dependencies. TODO: make it possible to use the library as an AMD
 module.
 
 
