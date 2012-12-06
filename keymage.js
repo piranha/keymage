@@ -96,7 +96,7 @@
     // -----------------------
     // Actual work is done here
 
-    var currentScope = 'all';
+    var currentScope = '';
 
     function parseKeyString(keystring) {
         var bits = keystring.split('-');
@@ -158,6 +158,20 @@
         return stringifyKey(key);
     }
 
+    function getNestedChains(chains, scope) {
+        for (var i = 0; i < scope.length; i++) {
+            var bit = scope[i];
+
+            if (bit) {
+                chains = chains[bit];
+            }
+
+            if (!chains) {
+                break;
+            }
+        }
+        return chains;
+    }
 
     var sequence = [];
     function dispatch(e) {
@@ -168,41 +182,59 @@
 
         var seq = sequence.slice();
         seq.push(eventKeyString(e));
+        var scope = currentScope.split('.');
         var matched = true;
+        var chains, key;
 
-        var chains = keymage.bindings[currentScope];
-        var key;
-        for (var i = 0; i < seq.length; i++) {
-            key = seq[i];
-            if (!chains[key]) {
-                matched = false;
+        for (var i = scope.length; i >= 0; i--) {
+            chains = getNestedChains(keymage.bindings, scope.slice(0, i));
+
+            matched = true;
+            for (var j = 0; j < seq.length; j++) {
+                key = seq[j];
+                if (!chains[key]) {
+                    matched = false;
+                    break;
+                }
+                chains = chains[key];
+            }
+
+            if (matched) {
                 break;
             }
-            chains = chains[key];
+        }
+
+        // partial match, save the sequence
+        if (matched && !chains.handlers) {
+            sequence = seq;
+            return;
         }
 
         if (matched) {
-            // partial match
-            if (!chains.handlers) {
-                sequence = seq;
-            } else {
-                for (i = 0; i < chains.handlers.length; i++) {
-                    var handler = chains.handlers[i];
-                    var res = handler(e, handler._original);
-                    if (res === false) {
-                        e.preventDefault();
-                    }
+            for (i = 0; i < chains.handlers.length; i++) {
+                var handler = chains.handlers[i];
+                var res = handler(e, handler._original);
+                if (res === false) {
+                    e.preventDefault();
                 }
             }
         }
+
+        // either matched or not, drop the sequence
+        sequence = [];
     }
 
     function assignKey(scope, keychain, fn) {
-        var chains = keymage.bindings[scope] || (keymage.bindings[scope] = {});
+        var bits = scope.split('.');
+        var chains = keymage.bindings;
 
-        for (var i = 0, l = keychain.length; i < l; i++) {
-            var key = keychain[i];
-            chains = chains[key] || (chains[key] = {});
+        bits = bits.concat(keychain);
+
+        for (var i = 0, l = bits.length; i < l; i++) {
+            var bit = bits[i];
+            if (!bit) continue;
+
+            chains = chains[bit] || (chains[bit] = {});
 
             if (i === l - 1) {
                 var handlers = chains.handlers || (chains.handlers = []);
@@ -221,7 +253,7 @@
         if (fn === undefined && typeof keychain === 'function') {
             fn = keychain;
             keychain = scope;
-            scope = 'all';
+            scope = '';
         }
 
         var normalized = normalizeKeyChain(keychain);
@@ -230,11 +262,33 @@
     };
 
 
-    keymage.bindings = {all: {}};
+    keymage.bindings = {};
+
     keymage.setScope = function(scope) {
-        currentScope = scope;
+        currentScope = scope ? scope : '';
     };
+
     keymage.getScope = function() { return currentScope; };
+
+    keymage.pushScope = function(scope) {
+        currentScope = (currentScope ? currentScope + '.' : '') + scope;
+        return currentScope;
+    };
+
+    keymage.popScope = function(scope) {
+        var i;
+
+        if (!scope) {
+            i = currentScope.lastIndexOf('.');
+            scope = currentScope.slice(i + 1);
+            currentScope = currentScope.slice(0, i);
+            return scope;
+        }
+
+        currentScope = currentScope.replace(
+            new RegExp('(^|\\.)' + scope + '(\\.|$).*'), '');
+        return scope;
+    };
 
 
     window.addEventListener('keydown', dispatch, false);
