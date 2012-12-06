@@ -11,26 +11,28 @@
     // Defining all keys
     var MODPROPS = ['shiftKey', 'ctrlKey', 'altKey', 'metaKey'];
     var MODS = {
-        'shift': 'shiftKey',
-        'ctrl': 'ctrlKey', 'control': 'ctrlKey',
-        'alt': 'altKey', 'option': 'altKey',
-        'win': 'metaKey', 'cmd': 'metaKey', 'super': 'metaKey',
-                          'meta': 'metaKey',
+        'shift': 'shift',
+        'ctrl': 'ctrl', 'control': 'ctrl',
+        'alt': 'alt', 'option': 'alt',
+        'win': 'meta', 'cmd': 'meta', 'super': 'meta',
+                          'meta': 'meta',
         // default modifier for os x is cmd and for others is ctrl
         'defmod': ~navigator.userAgent.indexOf('Mac OS X') ?
-            'metaKey' : 'ctrlKey'
+            'meta' : 'ctrl'
         };
+    var MODORDER = ['shift', 'ctrl', 'alt', 'meta'];
+    var MODNUMS = [16, 17, 18, 91];
 
     var KEYS = {
         'backspace': 8,
         'tab': 9,
         'enter': 13, 'return': 13,
         'pause': 19,
-        'caps': 20, 'caps-lock': 20,
+        'caps': 20, 'capslock': 20,
         'escape': 27, 'esc': 27,
         'space': 32,
-        'pgup': 33, 'page-up': 33,
-        'pgdown': 34, 'page-down': 34,
+        'pgup': 33, 'pageup': 33,
+        'pgdown': 34, 'pagedown': 34,
         'end': 35,
         'home': 36,
         'ins': 45, 'insert': 45,
@@ -74,6 +76,15 @@
         KEYS[String.fromCharCode(i).toLowerCase()] = i;
     }
 
+    // Reverse key codes
+    var KEYREV = {};
+    for (var k in KEYS) {
+        var val = KEYS[k];
+        if (!KEYREV[val] || KEYREV[val].length < k.length) {
+            KEYREV[val] = k;
+        }
+    }
+
     // Sequence matching states
 
     var STATE = {
@@ -85,152 +96,146 @@
     // -----------------------
     // Actual work is done here
 
-    var allChains = {
-        all: []
-    };
-
     var currentScope = 'all';
 
-    function parseKeystring(keystring) {
-        var keychain = [];
-        var combs = keystring.split(' ');
+    function parseKeyString(keystring) {
+        var bits = keystring.split('-');
+        var button = bits[bits.length - 1];
+        var key = {code: KEYS[button]};
 
-        var keySplit, keyInfo, key, keyCode, mod;
-        for (var i = 0; i < combs.length; i++) {
-            keySplit = combs[i].split('-');
-
-            key = keySplit[keySplit.length - 1];
-            keyInfo = {keyCode: KEYS[key]};
-
-            if (!keyInfo.keyCode) {
-                throw 'Unknown key "' + key + '" in keystring "' +
-                    keystring + '"';
-            }
-
-            for (var j = 0; j < keySplit.length - 1; j++) {
-                key = keySplit[j];
-                mod = MODS[key];
-                if (!mod) {
-                    throw 'Unknown modifier "' + key + '" in keystring "' +
-                        keystring + '"';
-                }
-                keyInfo[mod] = true;
-            }
-
-            keychain.push(keyInfo);
+        if (!key.code) {
+            throw 'Unknown key "' + button + '" in keystring "' +
+                keystring + '"';
         }
 
-        keychain.original = keystring;
+        var mod;
+        for (var i = 0; i < bits.length - 1; i++) {
+            button = bits[i];
+            mod = MODS[button];
+            if (!mod) {
+                    throw 'Unknown modifier "' + button + '" in keystring "' +
+                        keystring + '"';
+            }
+            key[mod] = true;
+        }
+
+        return key;
+    }
+
+    function stringifyKey(key) {
+        var s = '';
+        for (var i = 0; i < MODORDER.length; i++) {
+            if (key[MODORDER[i]]) {
+                s += MODORDER[i] + '-';
+            }
+        }
+        s += KEYREV[key.code];
+        return s;
+    }
+
+    function normalizeKeyChain(keychainString) {
+        var keychain = [];
+        var keys = keychainString.split(' ');
+
+        for (var i = 0; i < keys.length; i++) {
+            var key = parseKeyString(keys[i]);
+            key = stringifyKey(key);
+            keychain.push(key);
+        }
+
+        keychain.original = keychainString;
         return keychain;
     }
 
-    function eventInfo(e) {
-        var info = {keyCode: e.keyCode};
+    function eventKeyString(e) {
+        var key = {code: e.keyCode};
         for (var i = 0; i < MODPROPS.length; i++) {
-            if (e[MODPROPS[i]]) {
-                info[MODPROPS[i]] = true;
+            var mod = MODPROPS[i];
+            if (e[mod]) {
+                key[mod.slice(0, mod.length - 3)] = true;
             }
         }
-        return info;
-    }
-
-    function infoEqual(i1, i2) {
-        var k;
-        var eq = true;
-
-        for (k in i1) {
-            eq = eq && i1[k] == i2[k];
-        }
-
-        for (k in i2) {
-            eq = eq && i2[k] == i1[k];
-        }
-
-        return eq;
+        return stringifyKey(key);
     }
 
 
     var sequence = [];
-
     function dispatch(e) {
-        var info = eventInfo(e);
-        var seq = sequence.slice();
-        seq.push(info);
-        var chain, handler;
-        var state = STATE.MATCH;
-
-        var chains = allChains[currentScope];
-        if (currentScope != 'all') {
-            chains = chains.slice().concat(allChains.all);
+        // Skip all modifiers
+        if (~MODNUMS.indexOf(e.keyCode)) {
+            return;
         }
 
-        for (var i = 0; i < chains.length; i++) {
-            chain = chains[i][0];
-            handler = chains[i][1];
+        var seq = sequence.slice();
+        seq.push(eventKeyString(e));
+        var matched = true;
 
-            state = STATE.MATCH;
-            for (var j = 0; j < seq.length; j++) {
-                if (!infoEqual(seq[j], chain[j])) {
-                    state = STATE.INTERRUPT;
-                    break;
-                }
-            }
-
-            if (state === STATE.MATCH) {
-                // If we've got a match, but sequence is smaller than chain,
-                // this is not a real match.
-                if (seq.length < chain.length) {
-                    state = STATE.PARTIAL;
-                }
-
-                // By breaking in any case here we explicitly have no
-                // possibility to support chain which is part of other
-                // chain.
+        var chains = keymage.bindings[currentScope];
+        var key;
+        for (var i = 0; i < seq.length; i++) {
+            key = seq[i];
+            if (!chains[key]) {
+                matched = false;
                 break;
             }
+            chains = chains[key];
         }
 
-        switch (state) {
-        case STATE.INTERRUPT:
-            sequence = [];
-            break;
-        case STATE.PARTIAL:
-            sequence = seq;
-            break;
-        case STATE.MATCH:
-            sequence = [];
-            for (i = 0; i < [handler].length; i++) {
-                // var handler = [handler][i];
-                var res = handler(e, chain.original);
-                if (res === false) {
-                    e.preventDefault();
+        if (matched) {
+            // partial match
+            if (!chains.handlers) {
+                sequence = seq;
+            } else {
+                for (i = 0; i < chains.handlers.length; i++) {
+                    var handler = chains.handlers[i];
+                    var res = handler(e, handler._original);
+                    if (res === false) {
+                        e.preventDefault();
+                    }
                 }
             }
         }
     }
 
+    function assignKey(scope, keychain, fn) {
+        var chains = keymage.bindings[scope] || (keymage.bindings[scope] = {});
 
-    var keymage = exports.keymage = function(scope, keystring, fn) {
-        if (keystring === undefined && fn === undefined) {
-            return function(keystring, fn) {
-                return keymage(scope, keystring, fn);
+        for (var i = 0, l = keychain.length; i < l; i++) {
+            var key = keychain[i];
+            chains = chains[key] || (chains[key] = {});
+
+            if (i === l - 1) {
+                var handlers = chains.handlers || (chains.handlers = []);
+                handlers.push(fn);
+            }
+        }
+    }
+
+    var keymage = exports.keymage = function(scope, keychain, fn) {
+        if (keychain === undefined && fn === undefined) {
+            return function(keychain, fn) {
+                return keymage(scope, keychain, fn);
             };
         }
 
-        if (fn === undefined && typeof keystring === 'function') {
-            fn = keystring;
-            keystring = scope;
+        if (fn === undefined && typeof keychain === 'function') {
+            fn = keychain;
+            keychain = scope;
             scope = 'all';
         }
 
-        var chains = allChains[scope] || (allChains[scope] = []);
-        chains.push([parseKeystring(keystring), fn]);
+        var normalized = normalizeKeyChain(keychain);
+        fn._original = keychain;
+        assignKey(scope, normalized, fn);
     };
 
+
+    keymage.bindings = {all: {}};
     keymage.setScope = function(scope) {
         currentScope = scope;
     };
     keymage.getScope = function() { return currentScope; };
+
 
     window.addEventListener('keydown', dispatch, false);
     return keymage;
