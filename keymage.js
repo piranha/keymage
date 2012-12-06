@@ -1,4 +1,8 @@
 // keymage.js - Javascript keyboard event handling
+// http://github.com/piranha/keymage
+//
+// (c) 2012 Alexander Solovyov
+// under terms of ISC License
 
 (function(global, exports, undefined) {
     // Defining all keys
