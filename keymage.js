@@ -253,6 +253,8 @@
         assignKey(scope, normalized, fn);
     };
 
+    keymage.parse = parseKeyString;
+    keymage.stringify = stringifyKey;
 
     keymage.bindings = allChains;
 
