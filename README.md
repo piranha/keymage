@@ -14,6 +14,7 @@ all necessary features and their design made it easier to write a new one.
  - Nested scopes
  - Default modifier (`defmod` key which is `command` on OS X and `control`
    elsewhere)
+ - Ability to prevent defaults for whole sequence
 
 
 ## Usage
@@ -71,7 +72,24 @@ Keymage supports key sequences:
 keymage('ctrl-j k', function() { alert("Nice!"); });
 ```
 
-For this to fire you have to first press both `ctrl` and `j`, and then `k`.
+For this to fire you have to first press both `ctrl` and `j`, and then
+`k`. Here's the catch though: `ctrl-j` in most browsers means "open
+downloads". Which will break your sequence obviously.
+
+And while I encourage you to not override browser hotkeys, let's imagine you
+have to do that. For this, you can pass an option object as last parameter,
+having 'preventDefault' property set to `true`:
+
+```javascript
+keymage('ctrl-t ctrl-j k',
+        function() { alert("wow"); },
+        {preventDefault: true});
+```
+
+This option will prevent default on every key press which looks like a valid
+part of a bound sequence. And in this case it's perfectly legitimate - you're
+overriding `ctrl-j` in the middle of sequence, so common browser hotkey will
+still work.
 
 
 ## Scopes
@@ -119,3 +137,12 @@ will pop topmost one, i.e.:
 keymage.setScope('this.scope.is.deep.scope')
 keymage.popScope('scope') // scope is 'this'
 ```
+
+
+## Options
+
+Last and optional argument to `keymage` function is an option object. Here is a
+list of possible options:
+
+ - `preventDefault`: when `true`, calls `event.preventDefault()` on every key
+   press which looks like a part of defined sequence.
