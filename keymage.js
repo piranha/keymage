@@ -201,6 +201,7 @@
         // partial match, save the sequence
         if (matched && !chains.handlers) {
             sequence = seq;
+            if (options.preventDefault) e.preventDefault();
             return;
         }
 
