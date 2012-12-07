@@ -196,6 +196,7 @@
         }
 
         var definitionScope = scope.slice(0, i).join('.');
+        var options = chains.options;
 
         // partial match, save the sequence
         if (matched && !chains.handlers) {
@@ -232,6 +233,7 @@
             if (!bit) continue;
 
             chains = chains[bit] || (chains[bit] = {});
+            if (fn._keymage.options) chains.options = fn._keymage.options;
 
             if (i === l - 1) {
                 var handlers = chains.handlers || (chains.handlers = []);
