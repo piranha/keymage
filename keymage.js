@@ -201,7 +201,9 @@
         // partial match, save the sequence
         if (matched && !chains.handlers) {
             sequence = seq;
-            if (options.preventDefault) e.preventDefault();
+            if (options && options.preventDefault) {
+                e.preventDefault();
+            }
             return;
         }
 
@@ -251,7 +253,7 @@
         }
 
         if (typeof keychain === 'function') {
-            if (typeof fn === 'object') options = fn;
+            options = fn;
             fn = keychain;
             keychain = scope;
             scope = '';
