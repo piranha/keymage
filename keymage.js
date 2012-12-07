@@ -4,7 +4,7 @@
 // (c) 2012 Alexander Solovyov
 // under terms of ISC License
 
-(function(global, exports, undefined) {
+(function(exports, undefined) {
     // Defining all keys
     var MODPROPS = ['shiftKey', 'ctrlKey', 'altKey', 'metaKey'];
     var MODS = {
@@ -241,7 +241,7 @@
         }
     }
 
-    var keymage = exports.keymage = function(scope, keychain, fn) {
+    function keymage(scope, keychain, fn) {
         if (keychain === undefined && fn === undefined) {
             return function(keychain, fn) {
                 return keymage(scope, keychain, fn);
@@ -257,7 +257,7 @@
         var normalized = normalizeKeyChain(keychain);
         fn._original = keychain;
         assignKey(scope, normalized, fn);
-    };
+    }
 
     keymage.parse = parseKeyString;
     keymage.stringify = stringifyKey;
@@ -292,6 +292,6 @@
 
 
     window.addEventListener('keydown', dispatch, false);
+    exports.keymage = keymage;
     return keymage;
-})(this,
-   (typeof module !== 'undefined' && module.exports ? module.exports : this));
+})((typeof module !== 'undefined' && module.exports ? module.exports : this));
