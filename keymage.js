@@ -180,7 +180,6 @@
             if (!chains) {
                 continue;
             }
-
             matched = true;
             for (var j = 0; j < seq.length; j++) {
                 key = seq[j];
@@ -197,10 +196,12 @@
         }
 
         var definitionScope = scope.slice(0, i).join('.');
+        var options = chains.options;
 
         // partial match, save the sequence
         if (matched && !chains.handlers) {
             sequence = seq;
+            if (options.preventDefault) e.preventDefault();
             return;
         }
 
@@ -208,7 +209,7 @@
             for (i = 0; i < chains.handlers.length; i++) {
                 var handler = chains.handlers[i];
                 var res = handler(e, {
-                    shortcut: handler._original,
+                    shortcut: handler._keymage.original,
                     scope: currentScope,
                     definitionScope: definitionScope
                 });
@@ -233,6 +234,7 @@
             if (!bit) continue;
 
             chains = chains[bit] || (chains[bit] = {});
+            if (fn._keymage.options) chains.options = fn._keymage.options;
 
             if (i === l - 1) {
                 var handlers = chains.handlers || (chains.handlers = []);
@@ -241,21 +243,23 @@
         }
     }
 
-    function keymage(scope, keychain, fn) {
+    function keymage(scope, keychain, fn, options) {
         if (keychain === undefined && fn === undefined) {
             return function(keychain, fn) {
                 return keymage(scope, keychain, fn);
             };
         }
 
-        if (fn === undefined && typeof keychain === 'function') {
+        if (typeof keychain === 'function') {
+            if (typeof fn === 'object') options = fn;
             fn = keychain;
             keychain = scope;
             scope = '';
         }
 
         var normalized = normalizeKeyChain(keychain);
-        fn._original = keychain;
+        fn._keymage = {original: keychain};
+        if (options) fn._keymage.options = options;
         assignKey(scope, normalized, fn);
     }
 
