@@ -146,3 +146,5 @@ list of possible options:
 
  - `preventDefault`: when `true`, calls `event.preventDefault()` on every key
    press which looks like a part of defined sequence.
+
+ - `context`: binding handler will be called with provided object as a context.

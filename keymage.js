@@ -196,12 +196,12 @@
         }
 
         var definitionScope = scope.slice(0, i).join('.');
-        var options = chains.options;
+        var preventDefault = chains.preventDefault;
 
         // partial match, save the sequence
         if (matched && !chains.handlers) {
             sequence = seq;
-            if (options && options.preventDefault) {
+            if (preventDefault) {
                 e.preventDefault();
             }
             return;
@@ -210,7 +210,7 @@
         if (matched) {
             for (i = 0; i < chains.handlers.length; i++) {
                 var handler = chains.handlers[i];
-                var res = handler(e, {
+                var res = handler.call(handler._keymage.context, e, {
                     shortcut: handler._keymage.original,
                     scope: currentScope,
                     definitionScope: definitionScope
@@ -236,7 +236,9 @@
             if (!bit) continue;
 
             chains = chains[bit] || (chains[bit] = {});
-            if (fn._keymage.options) chains.options = fn._keymage.options;
+            if (fn._keymage.preventDefault) {
+                chains.preventDefault = true;
+            }
 
             if (i === l - 1) {
                 var handlers = chains.handlers || (chains.handlers = []);
@@ -245,6 +247,7 @@
         }
     }
 
+    // optional arguments: scope, options.
     function keymage(scope, keychain, fn, options) {
         if (keychain === undefined && fn === undefined) {
             return function(keychain, fn) {
@@ -260,8 +263,8 @@
         }
 
         var normalized = normalizeKeyChain(keychain);
-        fn._keymage = {original: keychain};
-        if (options) fn._keymage.options = options;
+        fn._keymage = options || {};
+        fn._keymage.original = keychain;
         assignKey(scope, normalized, fn);
     }
 
