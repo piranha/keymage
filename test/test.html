@@ -6,7 +6,14 @@
     <script type="text/javascript" src="wru.dom.js"></script>
 </head>
 <body>
+
+  <h1>KeyMage test suite</h1>
+
+  <div id="wru">
+  </div>
+
 <script type="text/javascript">
+wru.node = document.getElementById('wru');
 
 var MODS = ['ctrl', 'shift', 'alt', 'meta'];
 function fire(key) {
