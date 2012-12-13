@@ -25,8 +25,8 @@ Include `keymage.min.js` in your page:
 <script src="keymage.min.js"></script>
 ```
 
-There are no dependencies. TODO: make it possible to use the library as an AMD
-module.
+There are no dependencies. It is possible to use library as a simple JS module
+or as an AMD module.
 
 
 ## Defining shortcuts

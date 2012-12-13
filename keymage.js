@@ -4,7 +4,8 @@
 // (c) 2012 Alexander Solovyov
 // under terms of ISC License
 
-(function(exports, undefined) {
+(function(define, undefined) {
+define(function() {
     // Defining all keys
     var MODPROPS = ['shiftKey', 'ctrlKey', 'altKey', 'metaKey'];
     var MODS = {
@@ -301,6 +302,9 @@
 
 
     window.addEventListener('keydown', dispatch, false);
-    exports.keymage = keymage;
+
     return keymage;
-})((typeof module !== 'undefined' && module.exports ? module.exports : this));
+});
+})(typeof define !== 'undefined' ? define : function(factory) {
+    window.keymage = factory();
+});
