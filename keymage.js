@@ -211,11 +211,14 @@ define(function() {
         if (matched) {
             for (i = 0; i < chains.handlers.length; i++) {
                 var handler = chains.handlers[i];
-                var res = handler.call(handler._keymage.context, e, {
-                    shortcut: handler._keymage.original,
+                var options = handler._keymage;
+
+                var res = handler.call(options.context, e, {
+                    shortcut: options.original,
                     scope: currentScope,
                     definitionScope: definitionScope
                 });
+
                 if (res === false || preventDefault) {
                     e.preventDefault();
                 }
