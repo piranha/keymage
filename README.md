@@ -87,9 +87,9 @@ keymage('ctrl-t ctrl-j k',
 ```
 
 This option will prevent default on every key press which looks like a valid
-part of a bound sequence. And in this case it's perfectly legitimate - you're
-overriding `ctrl-j` in the middle of sequence, so common browser hotkey will
-still work.
+part of a bound sequence (including the one triggering your handler). And in
+this case it's perfectly legitimate - you're overriding `ctrl-j` in the middle
+of sequence, so common browser hotkey will still work.
 
 
 ## Scopes

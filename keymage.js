@@ -216,7 +216,7 @@ define(function() {
                     scope: currentScope,
                     definitionScope: definitionScope
                 });
-                if (res === false) {
+                if (res === false || preventDefault) {
                     e.preventDefault();
                 }
             }
