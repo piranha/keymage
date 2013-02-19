@@ -20,6 +20,11 @@
         e.preventDefault();
     });
 
+    keymage('defmod-. shift-meta-j', function(e) {
+        console.log('default prevented');
+    }, {preventDefault: true});
+
+    keymage.setScope('chat.input');
         </script>
     </body>
 </html>
