@@ -6,6 +6,8 @@
 
 (function(define, undefined) {
 define(function() {
+    var VERSION = '1.0.1';
+
     // Defining all keys
     var MODPROPS = ['shiftKey', 'ctrlKey', 'altKey', 'metaKey'];
     var MODS = {
@@ -303,6 +305,7 @@ define(function() {
         return scope;
     };
 
+    keymage.version = VERSION;
 
     window.addEventListener('keydown', dispatch, false);
 
