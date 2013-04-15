@@ -294,7 +294,7 @@ define(function() {
         if (!scope) {
             i = currentScope.lastIndexOf('.');
             scope = currentScope.slice(i + 1);
-            currentScope = currentScope.slice(0, i);
+            currentScope = i == -1 ? '' : currentScope.slice(0, i);
             return scope;
         }
 
