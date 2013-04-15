@@ -92,6 +92,10 @@ wru.test({
         wru.assert('', count === 4);
         fire({code: 65, ctrl: true}); fire({code: 66});
         wru.assert('', count === 4);
+
+        keymage.pushScope('loading');
+        keymage.popScope();
+        wru.assert('', keymage.getScope() === '');
     }});
 
 </script>
