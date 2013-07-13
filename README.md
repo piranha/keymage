@@ -28,6 +28,13 @@ Include `keymage.min.js` in your page:
 There are no dependencies. It is possible to use library as a simple JS module
 or as an AMD module.
 
+It worth to note that Keymage is on cdnjs and you can use it without
+downloading:
+
+```html
+<script src="//cdnjs.cloudflare.com/ajax/libs/keymage/1.0.1/keymage.min.js"></script>
+```
+
 
 ## Defining shortcuts
 
