@@ -1,0 +1,14 @@
+{
+  "name": "keymage",
+  "version": "1.0.1",
+  "description": "Javascript keyboard bindings handler with support for key chords",
+  "author": "Alexander Solovyov <alexander@solovyov.net>",
+  "license": "ISC",
+  "homepage": "https://github.com/piranha/keymage",
+  "main": "keymage.js",
+  "repository": {
+    "type": "git",
+    "url": "github.com:piranha/keymage.git"
+  },
+  "keywords": ["keyup","keydown","keybinding","keyboard","keychain"]
+}

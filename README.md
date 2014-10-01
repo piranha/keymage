@@ -1,9 +1,8 @@
 # keymage.js
 
-Keymage is a small library for handling key bindings in JavaScript.
-
-It was written out of the fact that no other library supported combination of
-all necessary features and their design made it easier to write a new one.
+Keymage is a small (1.5kb min.gz) library for handling key bindings in
+JavaScript. It supports nested application scopes, has a simple DSL for defining
+keys and can handle key chords.
 
 [Check tests](https://rawgithub.com/piranha/keymage/master/test/test.html)
 

@@ -2,7 +2,7 @@ var MODS = ['ctrl', 'shift', 'alt', 'meta'];
 function fire(key) {
     var e = document.createEvent('Event');
 
-    if (typeof keystring === 'string') {
+    if (typeof key === 'string') {
         key = keymage.parse(key);
     }
 
