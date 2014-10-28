@@ -7,6 +7,8 @@
 (function(define, undefined) {
 define(function() {
     var VERSION = '1.0.1';
+    var isOsx = typeof navigator !== 'undefined' &&
+        ~navigator.userAgent.indexOf('Mac OS X');
 
     // Defining all keys
     var MODPROPS = ['shiftKey', 'ctrlKey', 'altKey', 'metaKey'];
@@ -17,8 +19,7 @@ define(function() {
         'win': 'meta', 'cmd': 'meta', 'super': 'meta',
                           'meta': 'meta',
         // default modifier for os x is cmd and for others is ctrl
-        'defmod': ~navigator.userAgent.indexOf('Mac OS X') ?
-            'meta' : 'ctrl'
+        'defmod':  isOsx ? 'meta' : 'ctrl'
         };
     var MODORDER = ['shift', 'ctrl', 'alt', 'meta'];
     var MODNUMS = [16, 17, 18, 91];
@@ -312,5 +313,9 @@ define(function() {
     return keymage;
 });
 })(typeof define !== 'undefined' ? define : function(factory) {
-    window.keymage = factory();
+    if (typeof module !== 'undefined') {
+        module.exports = factory();
+    } else {
+        window.keymage = factory();
+    }
 });
