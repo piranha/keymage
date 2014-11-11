@@ -1,6 +1,6 @@
 {
   "name": "keymage",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "description": "Javascript keyboard bindings handler with support for key chords",
   "author": "Alexander Solovyov <alexander@solovyov.net>",
   "license": "ISC",

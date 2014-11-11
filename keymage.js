@@ -232,10 +232,9 @@ define(function() {
         sequence = [];
     }
 
-    function assignKey(scope, keychain, fn) {
+    function getHandlers(scope, keychain, fn) {
         var bits = scope.split('.');
         var chains = allChains;
-
         bits = bits.concat(keychain);
 
         for (var i = 0, l = bits.length; i < l; i++) {
@@ -243,19 +242,31 @@ define(function() {
             if (!bit) continue;
 
             chains = chains[bit] || (chains[bit] = {});
-            if (fn._keymage.preventDefault) {
+            if (fn && fn._keymage.preventDefault) {
                 chains.preventDefault = true;
             }
 
             if (i === l - 1) {
                 var handlers = chains.handlers || (chains.handlers = []);
-                handlers.push(fn);
+                return handlers;
             }
         }
     }
 
-    // optional arguments: scope, options.
-    function keymage(scope, keychain, fn, options) {
+    function assignKey(scope, keychain, fn) {
+        var handlers = getHandlers(scope, keychain, fn);
+        handlers.push(fn);
+    }
+
+    function unassignKey(scope, keychain, fn) {
+        var handlers = getHandlers(scope, keychain);
+        var idx = handlers.indexOf(fn);
+        if (~idx) {
+            handlers.splice(idx, 1);
+        }
+    }
+
+    function parsed(scope, keychain, fn, options) {
         if (keychain === undefined && fn === undefined) {
             return function(keychain, fn) {
                 return keymage(scope, keychain, fn);
@@ -270,10 +281,24 @@ define(function() {
         }
 
         var normalized = normalizeKeyChain(keychain);
+
+        return [scope, normalized, fn, options];
+    }
+
+    // optional arguments: scope, options.
+    function keymage(scope, keychain, fn, options) {
+        var args = parsed(scope, keychain, fn, options);
+        fn = args[2];
+        options = args[3];
         fn._keymage = options || {};
         fn._keymage.original = keychain;
-        assignKey(scope, normalized, fn);
+        assignKey.apply(null, args);
     }
+
+    keymage.unbind = function(scope, keychain, fn) {
+        var args = parsed(scope, keychain, fn);
+        unassignKey.apply(null, args);
+    };
 
     keymage.parse = parseKeyString;
     keymage.stringify = stringifyKey;

@@ -155,3 +155,12 @@ list of possible options:
    press which looks like a part of defined sequence.
 
  - `context`: binding handler will be called with provided object as a context.
+
+
+## Unbinding
+
+And if you ever need to unbind a handler, use this:
+
+```javascript
+keymage.unbind('ctrl-j k', your_handler_function);
+```

@@ -77,5 +77,26 @@ wru.test([
          keymage.pushScope('loading');
          keymage.popScope();
          wru.assert('popScope works', keymage.getScope() === '');
+     }},
+
+    {name: 'unbind',
+     test: function() {
+         var count = 0;
+         var handler = function() { count++; };
+         keymage('ctrl-a a', handler);
+         keymage('chat.input', 'ctrl-a c', handler);
+
+         keymage.pushScope('chat.input');
+         fire({code: 65, ctrl: true}); fire({code: 65});
+         fire({code: 65, ctrl: true}); fire({code: 67});
+         wru.assert('both handlers triggered', count === 2);
+
+         keymage.unbind('ctrl-a a', handler);
+         fire({code: 65, ctrl: true}); fire({code: 65});
+         wru.assert('nothing triggered', count === 2);
+
+         keymage.unbind('chat.input', 'ctrl-a c', handler);
+         fire({code: 65, ctrl: true}); fire({code: 67});
+         wru.assert('nothing triggered', count === 2);
      }}
 ]);
