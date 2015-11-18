@@ -46,10 +46,11 @@ define(function() {
 
         '*': 106,
         '+': 107, 'plus': 107,
-        '-': 109, 'minus': 109,
+        'minus': 109,
         ';': 186,
         '=': 187,
         ',': 188,
+        '-': 189,
         '.': 190,
         '/': 191,
         '`': 192,
@@ -93,7 +94,7 @@ define(function() {
     var allChains = {};
 
     function parseKeyString(keystring) {
-        var bits = keystring.split('-');
+        var bits = keystring.split(/-(?!$)/);
         var button = bits[bits.length - 1];
         var key = {code: KEYS[button]};
 

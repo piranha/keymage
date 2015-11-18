@@ -28,6 +28,10 @@ wru.test([
 
          fire({code: 65});
          wru.assert('pressed', count === 2);
+
+         keymage('ctrl-alt--', function() { count--; });
+         fire({code: 189, ctrl: true, alt: true});
+         wru.assert('pressed', count === 1);
      }},
 
     {name: 'Sequence',
