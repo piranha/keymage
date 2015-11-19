@@ -6,7 +6,7 @@
 
 (function(define, undefined) {
 define(function() {
-    var VERSION = '1.1.1';
+    var VERSION = '1.1.2';
     var isOsx = typeof navigator !== 'undefined' &&
         ~navigator.userAgent.indexOf('Mac OS X');
 
