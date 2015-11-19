@@ -28,11 +28,7 @@ There are no dependencies. It is possible to use library as a simple JS module,
 as an AMD module or as CommonJS module.
 
 It worth to note that [Keymage is on cdnjs](http://cdnjs.com/libraries/keymage/)
-and you can use it without downloading:
-
-```html
-<script src="//cdnjs.cloudflare.com/ajax/libs/keymage/1.0.1/keymage.min.js"></script>
-```
+which enables you to use it without downloading.
 
 Plus, of course, it's on [NPM](https://www.npmjs.org/package/keymage).
 
