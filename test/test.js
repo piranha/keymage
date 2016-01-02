@@ -102,5 +102,18 @@ wru.test([
          keymage.unbind('chat.input', 'ctrl-a c', handler);
          fire({code: 65, ctrl: true}); fire({code: 67});
          wru.assert('nothing triggered', count === 2);
+     }},
+
+    {name: 'Prepared unbinder',
+     test: function() {
+         var count = 0;
+         var unbinder = keymage('ctrl-a a', function () { count++; });
+         fire({code: 65, ctrl: true});
+
+         wru.assert('handler triggered', count === 1);
+
+         unbinder();
+         fire({code: 65, ctrl: true}); 
+         wru.assert('nothing triggered', count === 1);
      }}
 ]);
