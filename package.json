@@ -13,7 +13,6 @@
   "keywords": ["keyup", "keydown", "keypress", "keybinding", "keyboard",
                "keychain", "keychord", "hotkey", "shortcut"],
   "devDependencies": {
-    "phantomjs": "1.9.19",
-    "uglifyjs": "2.4.10"
+    "phantomjs": "1.9.19"
   }
 }
