@@ -108,12 +108,12 @@ wru.test([
      test: function() {
          var count = 0;
          var unbinder = keymage('ctrl-a a', function () { count++; });
-         fire({code: 65, ctrl: true});
+         fire({code: 65, ctrl: true}); fire({code: 65});
 
          wru.assert('handler triggered', count === 1);
 
          unbinder();
-         fire({code: 65, ctrl: true}); 
+         fire({code: 65, ctrl: true}); fire({code: 65});
          wru.assert('nothing triggered', count === 1);
      }}
 ]);

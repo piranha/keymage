@@ -6,4 +6,4 @@ all: keymage.min.js
 	node node_modules/uglify-js/bin/uglifyjs $< > $@
 
 test:
-	node ./node_modules/phantomjs/bin/phantomjs test/phantom.js test/phantom.html
+	node ./node_modules/phantomjs/bin/phantomjs test/phantom.js
