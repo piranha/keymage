@@ -294,6 +294,10 @@ define(function() {
         fn._keymage = options || {};
         fn._keymage.original = keychain;
         assignKey.apply(null, args);
+
+        return function () {
+            unassignKey.apply(null, args);
+        };
     }
 
     keymage.unbind = function(scope, keychain, fn) {
