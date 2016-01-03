@@ -1,12 +1,11 @@
-// keymage.js - Javascript keyboard event handling
-// http://github.com/piranha/keymage
-//
-// (c) 2012 Alexander Solovyov
-// under terms of ISC License
+/// keymage.js - Javascript keyboard bindings handling
+/// http://github.com/piranha/keymage
+///
+/// (c) 2012-2016 Alexander Solovyov under terms of ISC License
 
 (function(define, undefined) {
 define(function() {
-    var VERSION = '1.1.2';
+    var VERSION = '1.1.3';
     var isOsx = typeof navigator !== 'undefined' &&
         ~navigator.userAgent.indexOf('Mac OS X');
 

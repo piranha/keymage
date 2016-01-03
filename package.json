@@ -1,7 +1,7 @@
 {
   "name": "keymage",
   "version": "1.1.3",
-  "description": "Javascript keyboard bindings handler with support for key chords",
+  "description": "Javascript keyboard bindings (shortcuts) handler with support for key chords",
   "author": "Alexander Solovyov <alexander@solovyov.net>",
   "license": "ISC",
   "homepage": "https://github.com/piranha/keymage",
@@ -10,9 +10,10 @@
     "type": "git",
     "url": "github.com:piranha/keymage.git"
   },
-  "keywords": ["keyup","keydown","keybinding","keyboard","keychain"],
+  "keywords": ["keyup", "keydown", "keypress", "keybinding", "keyboard",
+               "keychain", "keychord", "hotkey", "shortcut"],
   "devDependencies": {
     "phantomjs": "1.9.19",
-    "uglify": "0.1.5"
+    "uglifyjs": "2.4.10"
   }
 }

@@ -1,2 +1,2 @@
 language: node_js
-script: "phantomjs test/phantom.js test/phantom.html"
+script: "phantomjs test/phantom.js"

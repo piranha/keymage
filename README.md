@@ -160,3 +160,10 @@ And if you ever need to unbind a handler, use this:
 ```javascript
 keymage.unbind('ctrl-j k', your_handler_function);
 ```
+
+Also, `keymage(...)` returns a function, which unbinds this shortcut when called:
+
+```javascript
+var unbinder = keymage('ctrl-j k', your_handler_function);
+unbinder();
+```

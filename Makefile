@@ -1,9 +1,12 @@
 .PHONY: test
 
+UGLIFYJS=node ./node_modules/.bin/uglifyjs
+PHANTOMJS=node ./node_modules/.bin/phantomjs
+
 all: keymage.min.js
 
 %.min.js: %.js
-	node node_modules/uglify-js/bin/uglifyjs $< > $@
+	$(UGLIFYJS) -c sequences --comments='/^\//' $< > $@
 
 test:
-	node ./node_modules/phantomjs/bin/phantomjs test/phantom.js
+	$(PHANTOMJS) test/phantom.js
