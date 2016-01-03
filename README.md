@@ -1,8 +1,8 @@
 # keymage.js
 
-Keymage is a small (`keymage.min.gz` is 2kb) library for handling key bindings in
-JavaScript. It supports nested application scopes, has a simple DSL for defining
-keys and can handle key chords.
+Keymage is a small (1.6kb after Closure Compiler and gzip) library for handling
+key bindings in JavaScript. It supports nested application scopes, has a simple
+DSL for defining keys and can handle key chords.
 
 [![Build Status](https://travis-ci.org/piranha/keymage.svg?branch=master)](https://travis-ci.org/piranha/keymage) - or [check tests](https://rawgithub.com/piranha/keymage/master/test/test.html) in browser
 
@@ -66,22 +66,27 @@ keymage('alt-c', function(e, ctx) {
 // -> "alt-c", "", ""
 ```
 
-
 ## Sequences
 
 Keymage supports key sequences:
 
 ```javascript
-keymage('ctrl-j k', function() { alert("Nice!"); });
+keymage('ctrl-k j', function() { alert("Nice!"); });
 ```
 
-For this to fire you have to first press both `ctrl` and `j`, and then
-`k`. Here's the catch though: `ctrl-j` in most browsers means "open
-downloads". Which will break your sequence obviously.
+For this to fire you have to first press both `ctrl` and `k`, and then
+`j`. This will fire an alert.
 
-And while I encourage you to not override browser hotkeys, let's imagine you
-have to do that. For this, you can pass an option object as last parameter,
-having 'preventDefault' property set to `true`:
+There is something to remember: browsers have their own shortcuts, for example
+`ctrl-j` in most browsers means "open downloads". And while you can always call
+`e.preventDefault()` in usual situation, if `ctrl-j` is part of a sequence, it's
+not that easy - you'll get control over what's happening only when the whole
+sequence is pressed.
+
+So keymage provides you with a means to support this use case. I do not
+encourage you to override browser hotkeys, but let's imagine you want to do
+that. For this, you can pass an option object as last parameter, having
+`preventDefault` property set to `true`:
 
 ```javascript
 keymage('ctrl-t ctrl-j k',
@@ -89,11 +94,10 @@ keymage('ctrl-t ctrl-j k',
         {preventDefault: true});
 ```
 
-This option will prevent default on every key press which looks like a valid
-part of a bound sequence (including the one triggering your handler). And in
-this case it's perfectly legitimate - you're overriding `ctrl-j` in the middle
-of sequence, so common browser hotkey will still work.
-
+This option will prevent default on *every* key press which is a valid part of a
+bound sequence, including the one triggering your handler. Note that pressing
+only `ctrl-j` (without `ctrl-t`) will still open downloads, keymage looks for
+sequence of `ctrl-t ctrl-j`.
 
 ## Scopes
 

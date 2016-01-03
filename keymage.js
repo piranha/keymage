@@ -1,7 +1,9 @@
-/// keymage.js - Javascript keyboard bindings handling
-/// http://github.com/piranha/keymage
-///
-/// (c) 2012-2016 Alexander Solovyov under terms of ISC License
+/** @license
+ * keymage.js - Javascript keyboard bindings handling
+ * http://github.com/piranha/keymage
+ *
+ * (c) 2012-2016 Alexander Solovyov under terms of ISC License
+ */
 
 (function(define, undefined) {
 define(function() {
@@ -66,7 +68,7 @@ define(function() {
     }
     // top row 0-9
     for (i = 0; i < 10; i++) {
-        KEYS[i.toString()] = i + 48;
+        KEYS['' + i] = i + 48;
     }
     // f1-f24
     for (i = 1; i < 25; i++) {
