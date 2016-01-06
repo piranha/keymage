@@ -338,7 +338,7 @@ define(function() {
 
     keymage.version = VERSION;
 
-    window.addEventListener('keydown', dispatch, false);
+    window.addEventListener('keydown', dispatch);
 
     return keymage;
 });
