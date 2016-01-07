@@ -82,12 +82,12 @@ define(function() {
 
     // Reverse key codes
     var KEYREV = {};
-    for (var k in KEYS) {
+    Object.keys(KEYS).forEach(function(k) {
         var val = KEYS[k];
         if (!KEYREV[val] || KEYREV[val].length < k.length) {
             KEYREV[val] = k;
         }
-    }
+    });
 
     // -----------------------
     // Actual work is done here
