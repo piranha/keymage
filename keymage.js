@@ -8,7 +8,7 @@
 (function(define, undefined) {
 define(function() {
     var VERSION = '1.1.3';
-    var isOsx = /^mac/i.test(navigator.platform);
+    var isOsx = ~navigator.userAgent.indexOf('Mac OS X');
 
     // Defining all keys
     var MODPROPS = ['shiftKey', 'ctrlKey', 'altKey', 'metaKey'];
