@@ -7,7 +7,7 @@
 
 (function(define, undefined) {
 define(function() {
-    'use strict'
+    'use strict';
 
     var VERSION = '1.1.3';
     var isOsx = ~navigator.userAgent.indexOf('Mac OS X');
