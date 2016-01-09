@@ -7,9 +7,10 @@
 
 (function(define, undefined) {
 define(function() {
+    'use strict';
+
     var VERSION = '1.1.3';
-    var isOsx = typeof navigator !== 'undefined' &&
-        ~navigator.userAgent.indexOf('Mac OS X');
+    var isOsx = ~navigator.userAgent.indexOf('Mac OS X');
 
     // Defining all keys
     var MODPROPS = ['shiftKey', 'ctrlKey', 'altKey', 'metaKey'];
@@ -81,12 +82,12 @@ define(function() {
 
     // Reverse key codes
     var KEYREV = {};
-    for (var k in KEYS) {
+    Object.keys(KEYS).forEach(function(k) {
         var val = KEYS[k];
         if (!KEYREV[val] || KEYREV[val].length < k.length) {
             KEYREV[val] = k;
         }
-    }
+    });
 
     // -----------------------
     // Actual work is done here
@@ -339,7 +340,7 @@ define(function() {
 
     keymage.version = VERSION;
 
-    window.addEventListener('keydown', dispatch, false);
+    window.addEventListener('keydown', dispatch);
 
     return keymage;
 });

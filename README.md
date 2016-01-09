@@ -4,7 +4,7 @@ Keymage is a small (1.6kb after Closure Compiler and gzip) library for handling
 key bindings in JavaScript. It supports nested application scopes, has a simple
 DSL for defining keys and can handle key chords.
 
-[![Build Status](https://travis-ci.org/piranha/keymage.svg?branch=master)](https://travis-ci.org/piranha/keymage) - or [check tests](https://rawgithub.com/piranha/keymage/master/test/test.html) in browser
+[![Build Status](https://travis-ci.org/piranha/keymage.svg?branch=master)](https://travis-ci.org/piranha/keymage) - or [check tests](https://rawgit.com/piranha/keymage/master/test/test.html) in browser
 
 ## Features
 
